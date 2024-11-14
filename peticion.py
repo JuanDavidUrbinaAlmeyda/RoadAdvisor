@@ -3,8 +3,24 @@ import requests
 # Función para realizar la solicitud y extraer el valor de cada sensor
 def obtener_valor_sensor(url, headers):
     response = requests.get(url, headers=headers)
-    data = response.json()
-    return data['value']
+    
+    # Verifica si la respuesta es exitosa
+    if response.status_code != 200:
+        print(f"Error en la solicitud: {response.status_code} - {response.text}")
+        return None
+    
+    # Verifica si hay contenido en la respuesta antes de intentar decodificarla
+    if not response.text:
+        print("La respuesta está vacía.")
+        return None
+    
+    try:
+        data = response.json()  # Intenta decodificar la respuesta como JSON
+    except requests.exceptions.JSONDecodeError as e:
+        print(f"Error de decodificación JSON: {e}. Contenido de la respuesta: {response.text}")
+        return None
+    
+    return data.get('value', None)  # Retorna el valor o None si no existe
 
 # Configuración del encabezado de autorización
 headers = {
