@@ -884,8 +884,10 @@ else:
             st.session_state.nav_option = "Crear Conductor"
         if st.sidebar.button('Crear Vehículo'):
             st.session_state.nav_option = "Crear Vehículo"
-        if st.sidebar.button('Planes'):  # Agregar botón solo para administradores
-            st.session_state.nav_option = "Planes"
+        # Mostrar el botón de Planes solo si el usuario no es admin_premium
+        if st.session_state.rol != "admin_premium":
+            if st.sidebar.button('Planes'):  # Agregar botón solo para administradores que no sean premium
+                st.session_state.nav_option = "Planes"
     if st.sidebar.button('Soporte'):
         st.session_state.nav_option = "Soporte"
     if st.sidebar.button('Alertas'):  # Agregar acceso a la página de alertas
@@ -893,6 +895,7 @@ else:
     if st.sidebar.button('Cerrar Sesión'):
         st.session_state.authenticated = False
         st.session_state.nav_option = "Login"
+
         
     # Navegar a la pantalla correspondiente según la selección del usuario
     if st.session_state.nav_option == "Home":
