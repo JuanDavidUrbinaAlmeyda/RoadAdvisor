@@ -323,15 +323,40 @@ def planes_page():
 def alertas_page():
     st.title("Alertas del Sistema")
     
-    # Conexión a la base de datos para obtener todas las alertas
+    # Obtener el ID del usuario y su rol desde el estado de sesión
+    id_usuario = st.session_state.id_usuario
+    rol_usuario = st.session_state.rol
+
+    # Conectar a la base de datos para obtener las alertas correspondientes
     conexion = obtener_conexion()
     cursor = conexion.cursor()
+
     try:
-        cursor.execute('''
-            SELECT id_veh, nombre, descripcion, fecha_creacion FROM alertas
-        ''')
+        # Consulta para obtener las alertas de los vehículos asociados al usuario actual
+        if rol_usuario in ["admin", "admin_premium"]:
+            # Si es admin o admin_premium, mostrar alertas de vehículos que administra
+            cursor.execute('''
+                SELECT alertas.id_veh, alertas.nombre, alertas.descripcion, alertas.fecha_creacion 
+                FROM alertas
+                INNER JOIN vehiculos ON alertas.id_veh = vehiculos.id_veh
+                WHERE vehiculos.id_admin = ?
+            ''', (id_usuario,))
+        elif rol_usuario == "conductor":
+            # Si es conductor, mostrar alertas de vehículos que conduce
+            cursor.execute('''
+                SELECT alertas.id_veh, alertas.nombre, alertas.descripcion, alertas.fecha_creacion 
+                FROM alertas
+                INNER JOIN vehiculos ON alertas.id_veh = vehiculos.id_veh
+                WHERE vehiculos.id_conductor = ?
+            ''', (id_usuario,))
+        else:
+            # Si no hay rol definido o es otro tipo de usuario, no mostrar alertas
+            alertas = []
+        
+        # Obtener las alertas
         alertas = cursor.fetchall()
         
+        # Mostrar las alertas si hay alguna
         if alertas:
             for alerta in alertas:
                 id_veh, nombre, descripcion, fecha_creacion = alerta
@@ -344,11 +369,12 @@ def alertas_page():
                     </div>
                 """, unsafe_allow_html=True)
         else:
-            st.info("No se encontraron alertas.")
+            st.info("No se encontraron alertas para los vehículos asociados.")
     except Exception as e:
         st.error(f"Error al obtener las alertas: {e}")
     finally:
         conexion.close()
+
 
 def pasarela_page():
     st.title("Formulario de Pago")
