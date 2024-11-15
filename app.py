@@ -135,9 +135,9 @@ def obtener_datos_conductor(id_conductor):
 # Función para la pantalla Crear Vehículo
 def crear_vehiculo_page():
     st.title("Crear Vehículo")
-    placa = st.text_input("Placa")
-    modelo = st.text_input("Modelo")
-    color = st.text_input("Color")
+    placa = st.text_input("Placa", max_chars=6)
+    modelo = st.text_input("Modelo", max_chars=30)
+    color = st.text_input("Color", max_chars=30)
     img_veh_url = st.text_input("URL de la Imagen del Vehículo")  # Nuevo campo para la URL de la imagen
 
     # Obtener y mostrar la lista de conductores y dueños
@@ -176,8 +176,8 @@ def crear_vehiculo_page():
 # Función para la pantalla Crear Conductor
 def crear_conductor_page():
     st.title("Crear Conductor")
-    nombre = st.text_input("Nombre Completo", key="conductor_nombre")
-    correo = st.text_input("Correo Electrónico", key="conductor_correo")
+    nombre = st.text_input("Nombre Completo", key="conductor_nombre", max_chars=30)
+    correo = st.text_input("Correo Electrónico", key="conductor_correo", max_chars=30)
     password = st.text_input("Contraseña", type="password", key="conductor_password")
     if st.button("Registrar Conductor"):
         if not nombre or not correo or not password:
@@ -249,8 +249,8 @@ def soporte_page():
     st.title("Contáctanos")
     st.write("Si tienes alguna pregunta o necesitas ayuda, completa el formulario a continuación y te contactaremos.")
 
-    motivo = st.text_input("Motivo")
-    mensaje_soporte = st.text_area("Solicitud de Soporte", height=150)
+    motivo = st.text_input("Motivo", max_chars=30)
+    mensaje_soporte = st.text_area("Solicitud de Soporte", height=150, max_chars=200)
 
     if st.button("Enviar"):
         if motivo and mensaje_soporte:
@@ -383,13 +383,13 @@ def pasarela_page():
     col1, col2 = st.columns(2)
 
     with col1:
-        nombre_titular = st.text_input("Nombre del Titular de la Tarjeta")
+        nombre_titular = st.text_input("Nombre del Titular de la Tarjeta", max_chars=30)
         tipo_persona = st.selectbox("Tipo de Persona", ["Natural", "Jurídica"])
         banco = st.selectbox("Banco", ["Bancolombia", "Banco de Bogotá", "Nequi", "Davivienda", "Nu", "Lulo", "BBVA"])
     
     with col2:
-        numero_tarjeta = st.text_input("Número de Tarjeta")
-        cvc = st.text_input("CVC", type="password")
+        numero_tarjeta = st.text_input("Número de Tarjeta", max_chars=20)
+        cvc = st.text_input("CVC", type="password", max_chars=3)
         fecha_vencimiento = st.date_input("Fecha de Vencimiento")
     
     # Mostrar el valor final
@@ -830,7 +830,7 @@ def login_page():
 
     with col2:  # Contenido centrado en la segunda columna
         st.title("Iniciar Sesión")
-        correo = st.text_input("Correo Electrónico")
+        correo = st.text_input("Correo Electrónico", max_chars=30)
         password = st.text_input("Contraseña", type="password")
         
         if st.button("Iniciar Sesión"):
@@ -853,8 +853,8 @@ def registro_page():
 
     with col2:  # Contenido centrado en la segunda columna
         st.title("Registrarse")
-        nombre = st.text_input("Nombre Completo")
-        correo = st.text_input("Correo Electrónico")
+        nombre = st.text_input("Nombre Completo", max_chars=30)
+        correo = st.text_input("Correo Electrónico", max_chars=30)
         password = st.text_input("Contraseña", type="password")
         
         if st.button("Registrarse"):
