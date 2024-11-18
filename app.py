@@ -2,9 +2,9 @@ import streamlit as st
 import sqlite3
 import pydeck as pdk
 from PIL import Image
-from peticion import obtener_valor_sensor, urls_por_vehiculo,url_accidente,url_estado_via, headers  # Importamos la función y URLs
-from email_alert import enviar_alerta_correo
-from payments import crear_pago_paypal  # Importa tu función de pagos
+from sensores.peticion import obtener_valor_sensor, urls_por_vehiculo,url_accidente,url_estado_via, headers  # Importamos la función y URLs
+from alertas.email_alert import enviar_alerta_correo
+from pagos.payments import crear_pago_paypal  # Importa tu función de pagos
 import matplotlib.pyplot as plt
 
 
