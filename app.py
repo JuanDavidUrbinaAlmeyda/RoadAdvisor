@@ -763,7 +763,21 @@ def dashboard_vehiculo(id_vehiculo):
         else:
             st.write("Ubicación no disponible")
 
-      
+# Función para actualizar los datos del usuario en la base de datos
+def actualizar_usuario(id_usuario, nuevo_nombre, nuevo_correo):
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    try:
+        cursor.execute('''
+            UPDATE usuarios
+            SET nombre = ?, correo = ?
+            WHERE id_usuario = ?
+        ''', (nuevo_nombre, nuevo_correo, id_usuario))
+        conexion.commit()
+    except Exception as e:
+        st.error(f"Error al actualizar los datos del perfil: {e}")
+    finally:
+        conexion.close()      
 
             
 def perfil_page():
@@ -772,38 +786,40 @@ def perfil_page():
     if usuario:
         nombre, rol, correo = usuario
 
-        # Obtener la URL de la imagen de perfil del usuario desde la base de datos
+        # Mostrar la imagen de perfil
         img_usr_url = obtener_imagen_usuario(st.session_state.id_usuario)
-        # URL de imagen predeterminada si el campo está vacío
         if not img_usr_url:
             img_usr_url = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-
-        # Mostrar la imagen del perfil
         st.image(img_usr_url, width=150, caption="Imagen de Perfil")
 
-        # Botón para abrir el popup de edición de imagen
+        # Edición de la imagen del perfil (opcional)
         if "editar_imagen" not in st.session_state:
             st.session_state.editar_imagen = False
-
         if st.button("Editar Imagen"):
             st.session_state.editar_imagen = not st.session_state.editar_imagen
-
-        # Mostrar el input de edición si se presiona el botón
         if st.session_state.editar_imagen:
             nueva_url_img = st.text_input("Ingrese la nueva URL de la imagen", key="input_nueva_img")
-
-            # Botón para actualizar la imagen
             if st.button("Actualizar Imagen"):
                 if nueva_url_img:
                     actualizar_imagen_usuario(st.session_state.id_usuario, nueva_url_img)
                     st.success("Imagen de perfil actualizada.")
-                    st.session_state.editar_imagen = False  # Cerrar el modo de edición
+                    st.session_state.editar_imagen = False
                 else:
                     st.warning("Por favor, ingrese una URL válida.")
 
-        st.write(f"**Nombre:** {nombre}")
+        # Inputs para editar el nombre y correo
+        nombre_editado = st.text_input("Nombre", nombre)
+        correo_editado = st.text_input("Correo", correo)
+
+        # Botón para guardar los cambios
+        if st.button("Guardar Cambios"):
+            if nombre_editado and correo_editado:
+                actualizar_usuario(st.session_state.id_usuario, nombre_editado, correo_editado)
+                st.success("Datos de perfil actualizados.")
+            else:
+                st.warning("El nombre y el correo no pueden estar vacíos.")
+        
         st.write(f"**Rol:** {rol}")
-        st.write(f"**Correo:** {correo}")
     else:
         st.error("No se pudo cargar la información del perfil.")
 
