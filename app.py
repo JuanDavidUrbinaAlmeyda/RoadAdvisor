@@ -133,24 +133,22 @@ def obtener_datos_conductor(id_conductor):
     return conductor
 
 # Función para la pantalla Crear Vehículo
+# Función para la pantalla Crear Vehículo
 def crear_vehiculo_page():
     st.title("Crear Vehículo")
-    placa = st.text_input("Placa", max_chars=6)
-    modelo = st.text_input("Modelo", max_chars=30)
-    color = st.text_input("Color", max_chars=30)
-    img_veh_url = st.text_input("URL de la Imagen del Vehículo")  # Nuevo campo para la URL de la imagen
+    placa = st.text_input("Placa")
+    modelo = st.text_input("Modelo")
+    color = st.text_input("Color")
+    img_veh_url = st.text_input("URL de la Imagen del Vehículo")  # Campo para la URL de la imagen
 
-    # Obtener y mostrar la lista de conductores y dueños
+    # Obtener y mostrar la lista de conductores
     conductores = obtener_conductores()
     conductor_options = {nombre: id_usuario for id_usuario, nombre in conductores}
     conductor_seleccionado = st.selectbox("Seleccione un Conductor", list(conductor_options.keys()))
-    duenos = obtener_duenos()
-    dueno_options = {nombre: id_usuario for id_usuario, nombre in duenos}
-    dueno_seleccionado = st.selectbox("Seleccione un Dueño", list(dueno_options.keys()))
-    id_admin = dueno_options[dueno_seleccionado]
+    id_admin = st.session_state.id_usuario  # Usar el ID del usuario en la sesión como dueño
 
     # Comprobación del límite de vehículos para el administrador
-    cantidad_vehiculos = contar_vehiculos(id_admin, st.session_state.rol)  # Pasamos id_admin y rol
+    cantidad_vehiculos = contar_vehiculos(id_admin, st.session_state.rol)
     if st.session_state.rol == "admin" and cantidad_vehiculos is not None and cantidad_vehiculos >= 3:
         st.error("Cada administrador solo puede crear hasta 3 vehículos.")
     else:
@@ -161,16 +159,17 @@ def crear_vehiculo_page():
             else:
                 # Obtener el id_conductor seleccionado
                 id_conductor = conductor_options[conductor_seleccionado]
-                
+
                 # Registrar el vehículo con la URL de la imagen
                 id_vehiculo = registrar_vehiculo(placa, modelo, color, id_conductor, id_admin, img_veh_url)
-                
+
                 if id_vehiculo:
                     # Guardar el id_vehiculo en el estado de sesión para redirigir al dashboard
                     st.session_state.vehiculo_seleccionado = id_vehiculo
                     st.success("Vehículo registrado exitosamente.")
                 else:
                     st.error("Error al registrar el vehículo.")
+
 
 
 # Función para la pantalla Crear Conductor
